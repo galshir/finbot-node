@@ -1,0 +1,1 @@
+export {createInitRoute} from './init';

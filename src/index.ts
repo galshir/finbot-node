@@ -1,13 +1,30 @@
-// src/index.ts
+
 import express from 'express';
+import cors from 'cors';
+import { createMainRouter } from './routes';
+import { InitService } from './service/init';
+import { InitDao } from './dao/init';
 
-const app = express();
-const port = 4000;
+export function createApp(daos: Daos) {
+    const {
+        initService,
+    } = initServices(daos);
 
-app.get('/', (req, res) => {
-  res.send('Hello, TypeScript with Express!');
-});
+    const app = express();
+    app.use(cors({origin: 'http://localhost:3000', credentials: true}));
+    app.use(createMainRouter(initService));
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+    return app;
+}
+
+function initServices(daos: Daos) {
+    const initService = new InitService(daos.initDao);
+
+    return {
+        initService,
+    }
+}
+
+export type Daos = {
+    initDao: InitDao;
+}
